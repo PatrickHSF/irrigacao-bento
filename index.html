@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Irrigação Inteligente</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#eef1f7;
+    font-family: 'Inter', sans-serif;
+}
+
+.main-card{
+    width:340px;
+    margin:auto;
+    border-radius:30px;
+    padding:30px;
+    background:#f8f9fc;
+    box-shadow: 
+        20px 20px 60px #d9dbe6,
+        -20px -20px 60px #ffffff;
+}
+
+.title{
+    font-weight:600;
+    font-size:20px;
+}
+
+.subtitle{
+    font-size:13px;
+    color:#8c8f9a;
+}
+
+.circle-wrapper{
+    width:160px;
+    height:160px;
+    margin:30px auto;
+    border-radius:50%;
+    background: conic-gradient(#009eff87 0% 65%, #ff000078 65% 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    /*box-shadow: inset 8px 8px 15px #d1d3dd,
+                inset -8px -8px 15px #ffffff; */
+}
+
+.circle-inner{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:#f8f9fc;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.circle-inner h1{
+    margin:0;
+    font-weight:600;
+}
+
+.badge-status{
+    background:#fde68a;
+    color:#92400e;
+    padding:6px 15px;
+    border-radius:20px;
+    font-size:13px;
+}
+
+.info-box{
+    background:#f8f9fc;
+    border-radius:20px;
+    padding:15px;
+    text-align:center;
+    box-shadow: 
+        8px 8px 20px #d9dbe6,
+        -8px -8px 20px #ffffff;
+}
+
+.icon-circle{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#f1f3f9;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    margin-bottom:8px;
+}
+
+.power-btn{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#1f2937;
+    color:white;
+    border:none;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+.modal-content{
+    border-radius:25px;
+    padding:30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container py-5">
+    <div class="main-card text-center">
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="title">Horta Inteligente</div>
+                <div class="subtitle">Controle de Irrigação</div>
+            </div>
+            <div>🛜</div>
+        </div>
+
+        <div class="circle-wrapper">
+            <div class="circle-inner">
+                <small>Umidade</small>
+                <h1 id="soilValue">65%</h1>
+                <span class="badge-status mt-2" id="soilStatus">Ideal</span>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+            <div class="col-6">
+                <div class="info-box">
+                    <div class="icon-circle">🌡</div>
+                    <small>Temperatura</small>
+                    <h6 id="tempValue">26°C</h6>
+                </div>
+            </div>
+        
+            <div class="col-6">
+                <div class="info-box">
+                    <div class="icon-circle">💧</div>
+                    <small>Válvula</small>
+                    <h6 id="valveStatus" style="color:#ef4444;">Desligada</h6>
+                </div>
+            </div>
+        
+            <!-- NOVA BOX CONFIGURAÇÃO -->
+            <div class="col-6">
+                <div class="info-box">
+                    <div class="icon-circle">⚙</div>
+                    <small>Configuração</small>
+                    <h6>Irriga abaixo de <span id="configLimit">40</span>%</h6>
+                </div>
+            </div>
+        
+            <!-- NOVA BOX BENTO IA -->
+            <div class="col-6">
+                <div class="info-box">
+                    <div class="icon-circle">🤖</div>
+                    <small>Sistema</small>
+                    <h6>Bento IA 1.0</h6>
+                </div>
+            </div>
+        </div>
+
+        <button class="power-btn mt-4" data-bs-toggle="modal" data-bs-target="#configModal">
+            ⚙
+        </button>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="configModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <h5>Ajustar Limite de Irrigação</h5>
+      <input type="range" min="10" max="90" value="40" class="form-range mt-4" id="limitRange">
+      <p class="text-center mt-2">
+        Irrigar abaixo de: <strong><span id="limitValue">40</span>%</strong>
+      </p>
+      <button class="btn btn-dark w-100 mt-3" data-bs-dismiss="modal">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+let soil = 65;
+let temp = 26;
+let valve = false;
+let limit = 40;
+
+function updateUI(){
+    document.getElementById("soilValue").innerText = soil + "%";
+    document.getElementById("tempValue").innerText = temp + "°C";
+    document.getElementById("configLimit").innerText = limit;
+
+    if(soil < limit){
+        document.getElementById("soilStatus").innerText = "Solo Seco";
+        document.getElementById("soilStatus").style.background = "#fecaca";
+        document.getElementById("valveStatus").innerText = "Ligada";
+        document.getElementById("valveStatus").style.color = "#22c55e";
+        valve = true;
+    } else {
+        document.getElementById("soilStatus").innerText = "Ideal";
+        document.getElementById("soilStatus").style.background = "#fde68a";
+        document.getElementById("valveStatus").innerText = "Desligada";
+        document.getElementById("valveStatus").style.color = "#ef4444";
+        valve = false;
+    }
+}
+
+
+updateUI();
+
+document.getElementById("limitRange").addEventListener("input", function(){
+    document.getElementById("limitValue").innerText = this.value;
+});
+</script>
+
+</body>
+</html>
