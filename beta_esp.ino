@@ -1,0 +1,629 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+ESP8266WebServer server(80);
+
+String dados="0,0,0,0,0,0";
+
+const char pagina[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Horta Inteligente</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#e0e0e0;
+}
+
+/* TOPO */
+
+.topo{
+background:linear-gradient(90deg,#ff8f00,#00ffff);
+padding:40px 20px;
+text-align:center;
+}
+
+.topo h1{
+margin:0;
+font-size:38px;
+}
+
+.topo p{
+margin:5px;
+font-size:18px;
+}
+
+/* AMBIENTE */
+
+.ambiente{
+display:flex;
+justify-content:space-around;
+margin-top:30px;
+}
+
+.ambiente-box{
+text-align:center;
+}
+
+.ambiente-box h2{
+font-size:70px;
+margin:0;
+}
+
+.ambiente-box p{
+font-size:16px;
+}
+
+/* CONTAINER */
+
+.wrapper{
+
+margin:-25px auto 30px auto;
+
+background:white;
+
+border-radius:30px;
+
+padding:30px;
+
+box-shadow:
+0 0 25px rgba(255,30,210,0.4),
+0 10px 30px rgba(0,0,0,0.15);
+
+}
+
+/* CARD SOLO */
+
+.card{
+
+background:linear-gradient(90deg,#0e75c9,#000000);
+
+color:white;
+
+border-radius:25px;
+
+padding:30px;
+
+margin-bottom:20px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+}
+
+/* LADO ESQUERDO */
+
+.solo-left{
+text-align:center;
+}
+
+.valor{
+font-size:80px;
+font-weight:bold;
+}
+
+.solo-left p{
+margin:0;
+}
+
+/* LADO DIREITO */
+
+.solo-right{
+text-align:right;
+}
+
+.ideal{
+color:#00ff5e;
+font-weight:bold;
+}
+
+.baixo{
+color:#ff2e2e;
+font-weight:bold;
+}
+
+.valve-on{
+color:#00ff5e;
+font-weight:bold;
+}
+
+.valve-off{
+color:#ff2e2e;
+font-weight:bold;
+}
+
+/* BOTÃO */
+
+.engrenagem{
+
+font-size:25px;
+
+background:white;
+
+color:#333;
+
+border-radius:50%;
+
+width:40px;
+height:40px;
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+margin-top:10px;
+
+}
+
+/* SWITCH */
+
+.switch{
+
+margin-top:15px;
+
+display:flex;
+align-items:center;
+justify-content:flex-end;
+
+gap:10px;
+
+}
+
+.switch input{
+
+appearance:none;
+
+width:45px;
+height:22px;
+
+background:#ccc;
+
+border-radius:20px;
+
+position:relative;
+
+cursor:pointer;
+
+}
+
+.switch input:checked{
+background:#4da6ff;
+}
+
+.switch input::before{
+
+content:"";
+
+width:18px;
+height:18px;
+
+background:white;
+
+border-radius:50%;
+
+position:absolute;
+
+top:2px;
+left:2px;
+
+transition:0.3s;
+
+}
+
+.switch input:checked::before{
+transform:translateX(22px);
+}
+
+/* MODAL */
+
+.modal{
+
+display:none;
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.4);
+
+justify-content:center;
+align-items:center;
+
+}
+
+.modal-box{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+width:300px;
+
+text-align:center;
+
+}
+
+.modal-box input{
+
+width:100%;
+
+}
+
+.modal-box button{
+
+margin-top:10px;
+
+padding:10px 20px;
+
+border:none;
+
+border-radius:10px;
+
+background:#0e75c9;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+/* RODAPÉ */
+
+.footer{
+text-align:center;
+font-weight:bold;
+color:#555;
+padding:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topo">
+
+<h1>Horta Inteligente</h1>
+<p>Controle de Irrigação</p>
+
+<div class="ambiente">
+
+<div class="ambiente-box">
+<h2 id="temp">--°C</h2>
+<p>Temperatura ambiente</p>
+</div>
+
+<div class="ambiente-box">
+<h2 id="hum">--%</h2>
+<p>Umidade ambiente</p>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="wrapper">
+
+<!-- SOLO 1 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº1</h3>
+<div class="valor" id="solo1">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status1" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve1" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite1">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(1)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(1)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 2 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº2</h3>
+<div class="valor" id="solo2">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status2" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve2" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite2">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(2)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(2)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 3 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº3</h3>
+<div class="valor" id="solo3">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status3" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve3" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite3">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(3)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(3)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 4 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº4</h3>
+<div class="valor" id="solo4">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status4" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve4" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite4">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(4)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(4)">
+</div>
+
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+BENTO IA 1.0
+</div>
+
+
+<!-- MODAL -->
+
+<div id="modalLimite" class="modal">
+
+<div class="modal-box">
+
+<h3>Ajustar limite de irrigação</h3>
+
+<input type="range" min="0" max="100" value="20" id="sliderLimite">
+
+<p>Valor: <span id="valorSlider">20</span>%</p>
+
+<button onclick="salvarLimite()">Salvar</button>
+<button onclick="fecharModal()">Cancelar</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+let soloSelecionado=1;
+
+/* atualizar sensores */
+
+function atualizar(){
+
+fetch("/dados")
+.then(r=>r.text())
+.then(t=>{
+
+let d=t.split(",")
+
+// SOLO
+let s1=parseInt(d[0])
+let s2=parseInt(d[1])
+let s3=parseInt(d[2])
+let s4=parseInt(d[3])
+
+document.getElementById("solo1").innerHTML=s1+"%"
+document.getElementById("solo2").innerHTML=s2+"%"
+document.getElementById("solo3").innerHTML=s3+"%"
+document.getElementById("solo4").innerHTML=s4+"%"
+
+// AMBIENTE
+document.getElementById("temp").innerHTML=d[4]+"°C"
+document.getElementById("hum").innerHTML=d[5]+"%"
+
+// RELÉS
+let r1=parseInt(d[6])
+let r2=parseInt(d[7])
+let r3=parseInt(d[8])
+let r4=parseInt(d[9])
+
+// ATUALIZA TUDO
+atualizarCard(1,s1,r1)
+atualizarCard(2,s2,r2)
+atualizarCard(3,s3,r3)
+atualizarCard(4,s4,r4)
+
+})
+}
+
+function atualizarCard(id, solo, rele){
+
+let limite = parseInt(document.getElementById("limite"+id).innerText)
+
+// ===== STATUS SOLO =====
+if(solo < limite){
+document.getElementById("status"+id).innerText="BAIXO"
+document.getElementById("status"+id).className="baixo"
+}else{
+document.getElementById("status"+id).innerText="IDEAL"
+document.getElementById("status"+id).className="ideal"
+}
+
+// ===== VÁLVULA =====
+if(rele == 1){
+document.getElementById("valve"+id).innerText="LIGADA"
+document.getElementById("valve"+id).className="valve-on"
+}else{
+document.getElementById("valve"+id).innerText="DESLIGADA"
+document.getElementById("valve"+id).className="valve-off"
+}
+
+}
+
+setInterval(atualizar,2000)
+
+
+/* modal */
+
+function abrirModal(id){
+
+soloSelecionado=id
+
+document.getElementById("modalLimite").style.display="flex"
+
+}
+
+function fecharModal(){
+
+document.getElementById("modalLimite").style.display="none"
+
+}
+
+function salvarLimite(){
+
+let valor=document.getElementById("sliderLimite").value
+
+fetch("/limite?solo="+soloSelecionado+"&valor="+valor)
+
+document.getElementById("limite"+soloSelecionado).innerHTML=valor+"%"
+
+fecharModal()
+
+}
+
+document.getElementById("sliderLimite").addEventListener("input",function(){
+
+document.getElementById("valorSlider").innerHTML=this.value
+
+})
+
+
+/* controle manual */
+
+function toggleManual(id){
+
+fetch("/manual?solo="+id)
+
+}
+
+</script>
+
+</body>
+</html>
+)rawliteral";
+
+void handleRoot(){
+server.send_P(200,"text/html; charset=utf-8",pagina);
+}
+
+void handleDados(){
+server.send(200,"text/plain",dados);
+}
+
+void setup(){
+
+Serial.begin(9600);
+
+WiFi.softAP("Horta_Inteligente","12345678");
+
+server.on("/",handleRoot);
+
+server.on("/dados",handleDados);
+
+server.on("/limite",[](){
+
+String solo=server.arg("solo");
+String valor=server.arg("valor");
+
+Serial.print("L");
+Serial.print(solo);
+Serial.print(":");
+Serial.println(valor);
+
+server.send(200,"text/plain","OK");
+
+});
+
+server.on("/manual",[](){
+
+String solo=server.arg("solo");
+
+Serial.print("M");
+Serial.println(solo);
+
+server.send(200,"text/plain","OK");
+
+});
+
+server.begin();
+
+}
+
+void loop(){
+
+server.handleClient();
+
+if(Serial.available()){
+
+dados=Serial.readStringUntil('\n');
+
+}
+
+}

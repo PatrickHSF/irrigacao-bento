@@ -1,278 +1,560 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bento IA 1.0 - Irrigação Inteligente</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Horta Inteligente</title>
 
 <style>
+
 body{
-    background:#eef1f7;
-    font-family: 'Inter', sans-serif;
+margin:0;
+font-family:Arial;
+background:#e0e0e0;
 }
 
-.main-card{
-    width:360px;
-    margin:auto;
-    border-radius:30px;
-    padding:30px;
-    background:#f8f9fc;
-    box-shadow: 
-        20px 20px 60px #d9dbe6,
-        -20px -20px 60px #ffffff;
+/* TOPO */
+
+.topo{
+background:linear-gradient(90deg,#ff8f00,#00ffff);
+padding:40px 20px;
+text-align:center;
 }
 
-.title{
-    font-weight:600;
-    font-size:20px;
+.topo h1{
+margin:0;
+font-size:38px;
 }
 
-.subtitle{
-    font-size:13px;
-    color:#8c8f9a;
+.topo p{
+margin:5px;
+font-size:18px;
 }
 
-/* CÍRCULO PRINCIPAL */
-.circle-wrapper{
-    width:170px;
-    height:170px;
-    margin:30px auto;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:0.6s;
+/* AMBIENTE */
+
+.ambiente{
+display:flex;
+justify-content:space-around;
+margin-top:30px;
 }
 
-.circle-inner{
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    background:#f8f9fc;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+.ambiente-box{
+text-align:center;
 }
 
-.circle-inner h1{
-    margin:0;
-    font-weight:600;
+.ambiente-box h2{
+font-size:70px;
+margin:0;
 }
 
-/* CÍRCULOS SECUNDÁRIOS */
-.circle-small{
-    width:120px;
-    height:120px;
-    margin:20px auto;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:0.6s;
+.ambiente-box p{
+font-size:16px;
 }
 
-.circle-small-inner{
-    width:105px;
-    height:105px;
-    border-radius:50%;
-    background:#f8f9fc;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+/* CONTAINER */
+
+.wrapper{
+
+margin:-25px auto 30px auto;
+
+background:white;
+
+border-radius:30px;
+
+padding:30px;
+
+box-shadow:
+0 0 25px rgba(255,30,210,0.4),
+0 10px 30px rgba(0,0,0,0.15);
+
 }
 
-.badge-status{
-    background:#fde68a;
-    color:#92400e;
-    padding:6px 15px;
-    border-radius:20px;
-    font-size:13px;
+/* CARD SOLO */
+
+.card{
+
+background:linear-gradient(90deg,#0e75c9,#000000);
+
+color:white;
+
+border-radius:25px;
+
+padding:30px;
+
+margin-bottom:20px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
 }
 
-.power-btn{
-    width:60px;
-    height:60px;
-    border-radius:50%;
-    background:#1f2937;
-    color:white;
-    border:none;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+/* LADO ESQUERDO */
+
+.solo-left{
+text-align:center;
 }
 
-.modal-content{
-    border-radius:25px;
-    padding:30px;
+.valor{
+font-size:80px;
+font-weight:bold;
 }
+
+.solo-left p{
+margin:0;
+}
+
+/* LADO DIREITO */
+
+.solo-right{
+text-align:right;
+}
+
+.ideal{
+color:#00ff5e;
+font-weight:bold;
+}
+
+.baixo{
+color:#ff2e2e;
+font-weight:bold;
+}
+
+.valve-on{
+color:#00ff5e;
+font-weight:bold;
+}
+
+.valve-off{
+color:#ff2e2e;
+font-weight:bold;
+}
+
+/* BOTÃO */
+
+.engrenagem{
+
+font-size:25px;
+
+background:white;
+
+color:#333;
+
+border-radius:50%;
+
+width:40px;
+height:40px;
+
+display:inline-flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+margin-top:10px;
+
+}
+
+/* SWITCH */
+
+.switch{
+
+margin-top:15px;
+
+display:flex;
+align-items:center;
+justify-content:flex-end;
+
+gap:10px;
+
+}
+
+.switch input{
+
+appearance:none;
+
+width:45px;
+height:22px;
+
+background:#ccc;
+
+border-radius:20px;
+
+position:relative;
+
+cursor:pointer;
+
+}
+
+.switch input:checked{
+background:#4da6ff;
+}
+
+.switch input::before{
+
+content:"";
+
+width:18px;
+height:18px;
+
+background:white;
+
+border-radius:50%;
+
+position:absolute;
+
+top:2px;
+left:2px;
+
+transition:0.3s;
+
+}
+
+.switch input:checked::before{
+transform:translateX(22px);
+}
+
+/* MODAL */
+
+.modal{
+
+display:none;
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.4);
+
+justify-content:center;
+align-items:center;
+
+}
+
+.modal-box{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+width:300px;
+
+text-align:center;
+
+}
+
+.modal-box input{
+
+width:100%;
+
+}
+
+.modal-box button{
+
+margin-top:10px;
+
+padding:10px 20px;
+
+border:none;
+
+border-radius:10px;
+
+background:#0e75c9;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+/* RODAPÉ */
+
+.footer{
+text-align:center;
+font-weight:bold;
+color:#555;
+padding:15px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="container py-5">
-    <div class="main-card text-center">
-        
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div class="title">Horta Inteligente</div>
-                <div class="subtitle">Controle de Irrigação</div>
-            </div>
-            <div>🛜</div>
-        </div>
+<div class="topo">
 
-        <!-- UMIDADE -->
-        <div class="circle-wrapper" id="soilCircle">
-            <div class="circle-inner">
-                <small>Umidade</small>
-                <h1 id="soilValue">65%</h1>
-                <span class="badge-status mt-2" id="soilStatus">Ideal</span>
-            </div>
-        </div>
+<h1>Horta Inteligente</h1>
+<p>Controle de Irrigação</p>
 
-        <!-- TEMPERATURA -->
-        <div class="circle-small" id="tempCircle">
-            <div class="circle-small-inner">
-                <small>Temperatura</small>
-                <h5 id="tempValue">26°C</h5>
-            </div>
-        </div>
+<div class="ambiente">
 
-        <!-- LIMITE CONFIGURADO -->
-        <div class="circle-small" id="limitCircle">
-            <div class="circle-small-inner">
-                <small>Irriga abaixo</small>
-                <h5><span id="configLimit">40</span>%</h5>
-            </div>
-        </div>
-
-        <!-- STATUS VÁLVULA -->
-        <div class="circle-small" id="valveCircle">
-            <div class="circle-small-inner">
-                <small>Válvula</small>
-                <h6 id="valveStatus" style="color:#ef4444;">Desligada</h6>
-            </div>
-        </div>
-
-        <div class="mt-2 text-muted" style="font-size:13px;">
-            Bento IA 1.0
-        </div>
-
-        <div class="d-flex justify-content-center gap-3 mt-4">
-
-            <!-- BOTÃO MANUAL -->
-            <button class="power-btn" onclick="toggleManual()" id="manualBtn">
-                ⏻
-            </button>
-        
-            <!-- BOTÃO CONFIGURAÇÃO -->
-            <button class="power-btn" data-bs-toggle="modal" data-bs-target="#configModal">
-                ⚙
-            </button>
-        
-        </div>
-
-    </div>
+<div class="ambiente-box">
+<h2 id="temp">--°C</h2>
+<p>Temperatura ambiente</p>
 </div>
+
+<div class="ambiente-box">
+<h2 id="hum">--%</h2>
+<p>Umidade ambiente</p>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="wrapper">
+
+<!-- SOLO 1 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº1</h3>
+<div class="valor" id="solo1">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status1" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve1" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite1">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(1)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(1)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 2 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº2</h3>
+<div class="valor" id="solo2">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status2" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve2" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite2">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(2)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(2)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 3 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº3</h3>
+<div class="valor" id="solo3">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status3" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve3" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite3">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(3)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(3)">
+</div>
+
+</div>
+</div>
+
+
+<!-- SOLO 4 -->
+<div class="card">
+
+<div class="solo-left">
+<h3>Solo nº4</h3>
+<div class="valor" id="solo4">--%</div>
+<p>Umidade do solo</p>
+</div>
+
+<div class="solo-right">
+<p>Status <span id="status4" class="ideal">IDEAL</span></p>
+<p>Válvula <span id="valve4" class="valve-off">DESLIGADA</span></p>
+<p>Irrigação abaixo <span id="limite4">20%</span></p>
+
+<div class="engrenagem" onclick="abrirModal(4)">⚙</div>
+
+<div class="switch">
+<span>Manual</span>
+<input type="checkbox" onclick="toggleManual(4)">
+</div>
+
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+BENTO IA 1.0
+</div>
+
 
 <!-- MODAL -->
-<div class="modal fade" id="configModal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <h5>Ajustar Limite de Irrigação</h5>
-      <input type="range" min="10" max="90" value="40" class="form-range mt-4" id="limitRange">
-      <p class="text-center mt-2">
-        Irrigar abaixo de: <strong><span id="limitValue">40</span>%</strong>
-      </p>
-      <button class="btn btn-dark w-100 mt-3" data-bs-dismiss="modal">Salvar</button>
-    </div>
-  </div>
+
+<div id="modalLimite" class="modal">
+
+<div class="modal-box">
+
+<h3>Ajustar limite de irrigação</h3>
+
+<input type="range" min="0" max="100" value="20" id="sliderLimite">
+
+<p>Valor: <span id="valorSlider">20</span>%</p>
+
+<button onclick="salvarLimite()">Salvar</button>
+<button onclick="fecharModal()">Cancelar</button>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
 
 <script>
-let soil = 65;
-let temp = 26;
-let limit = 40;
-let valve = false;
-let manualMode = false;
 
-function updateUI(){
+let soloSelecionado=1;
 
-document.getElementById("soilValue").innerText = soil + "%";
-document.getElementById("tempValue").innerText = temp + "°C";
-document.getElementById("configLimit").innerText = limit;
+/* atualizar sensores */
 
-// Círculo Umidade
-document.getElementById("soilCircle").style.background =
-    `conic-gradient(#009eff 0% ${soil}%, #e5e7eb ${soil}% 100%)`;
+function atualizar(){
 
-// Temperatura
-let tempPercent = (temp / 50) * 100;
-document.getElementById("tempCircle").style.background =
-    `conic-gradient(#ff9800 0% ${tempPercent}%, #e5e7eb ${tempPercent}% 100%)`;
+fetch("/dados")
+.then(r=>r.text())
+.then(t=>{
 
-// Limite
-document.getElementById("limitCircle").style.background =
-    `conic-gradient(#22c55e 0% ${limit}%, #e5e7eb ${limit}% 100%)`;
+let d=t.split(",")
 
-// Controle automático (só funciona se não estiver em modo manual)
-if(!manualMode){
-    valve = soil < limit;
+// SOLO
+let s1=parseInt(d[0])
+let s2=parseInt(d[1])
+let s3=parseInt(d[2])
+let s4=parseInt(d[3])
+
+document.getElementById("solo1").innerHTML=s1+"%"
+document.getElementById("solo2").innerHTML=s2+"%"
+document.getElementById("solo3").innerHTML=s3+"%"
+document.getElementById("solo4").innerHTML=s4+"%"
+
+// AMBIENTE
+document.getElementById("temp").innerHTML=d[4]+"°C"
+document.getElementById("hum").innerHTML=d[5]+"%"
+
+// RELÉS
+let r1=parseInt(d[6])
+let r2=parseInt(d[7])
+let r3=parseInt(d[8])
+let r4=parseInt(d[9])
+
+// ATUALIZA TUDO
+atualizarCard(1,s1,r1)
+atualizarCard(2,s2,r2)
+atualizarCard(3,s3,r3)
+atualizarCard(4,s4,r4)
+
+})
 }
 
-// Atualiza visual válvula
-if(valve){
-    document.getElementById("valveStatus").innerText = "Ligada";
-    document.getElementById("valveStatus").style.color = "#22c55e";
-    document.getElementById("valveCircle").style.background =
-        `conic-gradient(#22c55e 0% 100%, #e5e7eb 0% 0%)`;
-} else {
-    document.getElementById("valveStatus").innerText = "Desligada";
-    document.getElementById("valveStatus").style.color = "#ef4444";
-    document.getElementById("valveCircle").style.background =
-        `conic-gradient(#ef4444 0% 100%, #e5e7eb 0% 0%)`;
+function atualizarCard(id, solo, rele){
+
+let limite = parseInt(document.getElementById("limite"+id).innerText)
+
+// ===== STATUS SOLO =====
+if(solo < limite){
+document.getElementById("status"+id).innerText="BAIXO"
+document.getElementById("status"+id).className="baixo"
+}else{
+document.getElementById("status"+id).innerText="IDEAL"
+document.getElementById("status"+id).className="ideal"
 }
 
-// Status do solo
-if(soil < limit){
-    document.getElementById("soilStatus").innerText = "Solo Seco";
-    document.getElementById("soilStatus").style.background = "#fecaca";
-} else {
-    document.getElementById("soilStatus").innerText = "Ideal";
-    document.getElementById("soilStatus").style.background = "#fde68a";
-}
-}
-
-function toggleManual(){
-    manualMode = !manualMode;
-    valve = manualMode;
-
-    const btn = document.getElementById("manualBtn");
-
-    if(manualMode){
-        btn.style.background = "#22c55e";
-    } else {
-        btn.style.background = "#1f2937";
-    }
-
-    updateUI();
+// ===== VÁLVULA =====
+if(rele == 1){
+document.getElementById("valve"+id).innerText="LIGADA"
+document.getElementById("valve"+id).className="valve-on"
+}else{
+document.getElementById("valve"+id).innerText="DESLIGADA"
+document.getElementById("valve"+id).className="valve-off"
 }
 
-if(!manualMode){
-    valve = soil < limit;
 }
 
-updateUI();
+setInterval(atualizar,2000)
 
-document.getElementById("limitRange").addEventListener("input", function(){
-    limit = this.value;
-    document.getElementById("limitValue").innerText = limit;
-    updateUI();
-});
+
+/* modal */
+
+function abrirModal(id){
+
+soloSelecionado=id
+
+document.getElementById("modalLimite").style.display="flex"
+
+}
+
+function fecharModal(){
+
+document.getElementById("modalLimite").style.display="none"
+
+}
+
+function salvarLimite(){
+
+let valor=document.getElementById("sliderLimite").value
+
+fetch("/limite?solo="+soloSelecionado+"&valor="+valor)
+
+document.getElementById("limite"+soloSelecionado).innerHTML=valor+"%"
+
+fecharModal()
+
+}
+
+document.getElementById("sliderLimite").addEventListener("input",function(){
+
+document.getElementById("valorSlider").innerHTML=this.value
+
+})
+
+
+/* controle manual */
+
+function toggleManual(id){
+
+fetch("/manual?solo="+id)
+
+}
+
 </script>
 
 </body>
